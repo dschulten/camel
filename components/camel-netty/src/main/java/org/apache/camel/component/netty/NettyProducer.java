@@ -454,10 +454,7 @@ public class NettyProducer extends DefaultAsyncProducer {
                 clientBootstrap.channel(NioSocketChannel.class);
             }
             clientBootstrap.group(getWorkerGroup());
-            clientBootstrap.option(ChannelOption.SO_KEEPALIVE, configuration.isKeepAlive());
-            clientBootstrap.option(ChannelOption.TCP_NODELAY, configuration.isTcpNoDelay());
-            clientBootstrap.option(ChannelOption.SO_REUSEADDR, configuration.isReuseAddress());
-            clientBootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, configuration.getConnectTimeout());
+            configureTcpClientBootstrap(clientBootstrap);
 
             //TODO need to check it later;
             // set any additional netty options
@@ -522,6 +519,13 @@ public class NettyProducer extends DefaultAsyncProducer {
             }
             return answer;
         }
+    }
+
+    protected void configureTcpClientBootstrap(Bootstrap clientBootstrap) {
+        clientBootstrap.option(ChannelOption.SO_KEEPALIVE, configuration.isKeepAlive());
+        clientBootstrap.option(ChannelOption.TCP_NODELAY, configuration.isTcpNoDelay());
+        clientBootstrap.option(ChannelOption.SO_REUSEADDR, configuration.isReuseAddress());
+        clientBootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, configuration.getConnectTimeout());
     }
 
     protected void notifyChannelOpen(ChannelFuture channelFuture) throws Exception {

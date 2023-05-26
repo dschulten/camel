@@ -21,9 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.netty.bootstrap.Bootstrap;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
+import io.netty.resolver.NoopAddressResolverGroup;
 import io.netty.util.ReferenceCountUtil;
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
@@ -118,6 +120,15 @@ public class NettyHttpProducer extends NettyProducer {
         }
 
         return request;
+    }
+
+    @Override
+    protected void configureTcpClientBootstrap(Bootstrap clientBootstrap) {
+        super.configureTcpClientBootstrap(clientBootstrap);
+        NettyHttpConfiguration configuration = getConfiguration();
+        if (configuration.isUseHttpProxy()) {
+            clientBootstrap.resolver(NoopAddressResolverGroup.INSTANCE);
+        }
     }
 
     /**

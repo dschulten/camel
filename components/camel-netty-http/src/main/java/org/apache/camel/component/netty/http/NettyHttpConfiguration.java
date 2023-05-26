@@ -33,7 +33,7 @@ import org.apache.camel.spi.UriPath;
 @Configurer
 public class NettyHttpConfiguration extends NettyConfiguration {
 
-    @UriPath(enums = "http,https")
+    @UriPath(enums = "http,https,proxy")
     @Metadata(required = true)
     private String protocol;
     @UriPath
@@ -78,8 +78,23 @@ public class NettyHttpConfiguration extends NettyConfiguration {
     @UriParam(label = "producer,advanced", defaultValue = "true")
     private boolean useRelativePath = true;
     @UriParam(defaultValue = "false", label = "advanced",
-              description = "Sets whether synchronous processing should be strictly used")
+            description = "Sets whether synchronous processing should be strictly used")
     private boolean synchronous;
+    @UriParam(label = "producer", defaultValue = "false",
+            description = "Sets whether http proxy should be used")
+    private boolean useHttpProxy;
+    @UriParam(label = "producer",
+            description = "Sets http proxy host")
+    private String httpProxyHost;
+    @UriParam(label = "producer",
+            description = "Sets http proxy port")
+    private int httpProxyPort;
+    @UriParam(label = "producer",
+            description = "Sets http proxy user name")
+    private String httpProxyUserName;
+    @UriParam(label = "producer",
+            description = "Sets http proxy password")
+    private String httpProxyPassword;
 
     public NettyHttpConfiguration() {
         // we need sync=true as http is request/reply by nature
@@ -328,7 +343,7 @@ public class NettyHttpConfiguration extends NettyConfiguration {
     /**
      * The maximum length of the initial line (e.g. {@code "GET / HTTP/1.0"} or {@code "HTTP/1.0 200 OK"}) If the length
      * of the initial line exceeds this value, a {@link TooLongFrameException} will be raised.
-     *
+     * <p>
      * See {@link io.netty.handler.codec.http.HttpObjectDecoder}
      */
     public void setMaxInitialLineLength(int maxInitialLineLength) {
@@ -343,7 +358,7 @@ public class NettyHttpConfiguration extends NettyConfiguration {
      * The maximum length of the content or each chunk. If the content length (or the length of each chunk) exceeds this
      * value, the content or chunk will be split into multiple {@link io.netty.handler.codec.http.HttpContent}s whose
      * length is {@code maxChunkSize} at maximum.
-     *
+     * <p>
      * See {@link io.netty.handler.codec.http.HttpObjectDecoder}
      */
     public void setMaxChunkSize(int maxChunkSize) {
@@ -398,5 +413,45 @@ public class NettyHttpConfiguration extends NettyConfiguration {
 
     public void setSynchronous(boolean synchronous) {
         this.synchronous = synchronous;
+    }
+
+    public boolean isUseHttpProxy() {
+        return useHttpProxy;
+    }
+
+    public void setUseHttpProxy(boolean useHttpProxy) {
+        this.useHttpProxy = useHttpProxy;
+    }
+
+    public String getHttpProxyHost() {
+        return httpProxyHost;
+    }
+
+    public void setHttpProxyHost(String httpProxyHost) {
+        this.httpProxyHost = httpProxyHost;
+    }
+
+    public int getHttpProxyPort() {
+        return httpProxyPort;
+    }
+
+    public void setHttpProxyPort(int httpProxyPort) {
+        this.httpProxyPort = httpProxyPort;
+    }
+
+    public String getHttpProxyUserName() {
+        return httpProxyUserName;
+    }
+
+    public void setHttpProxyUserName(String httpProxyUserName) {
+        this.httpProxyUserName = httpProxyUserName;
+    }
+
+    public String getHttpProxyPassword() {
+        return httpProxyPassword;
+    }
+
+    public void setHttpProxyPassword(String httpProxyPassword) {
+        this.httpProxyPassword = httpProxyPassword;
     }
 }

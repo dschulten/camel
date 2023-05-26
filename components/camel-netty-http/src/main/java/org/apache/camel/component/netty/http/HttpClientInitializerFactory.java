@@ -16,6 +16,7 @@
  */
 package org.apache.camel.component.netty.http;
 
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.apache.camel.RuntimeCamelException;
@@ -89,6 +91,18 @@ public class HttpClientInitializerFactory extends ClientInitializerFactory {
             //sslHandler.setCloseOnSSLException(true);
             LOG.debug("Client SSL handler configured and added as an interceptor against the ChannelPipeline: {}", sslHandler);
             pipeline.addLast("ssl", sslHandler);
+        }
+
+        if (configuration.isUseHttpProxy()) {
+            String proxyHost = configuration.getHttpProxyHost();
+            int proxyPort = configuration.getHttpProxyPort();
+            String proxyUserName = configuration.getHttpProxyUserName();
+            String proxyPassword = configuration.getHttpProxyPassword();
+
+            HttpProxyHandler httpProxyHandler = new HttpProxyHandler(
+                    new InetSocketAddress(proxyHost, proxyPort), proxyUserName, proxyPassword);
+
+            pipeline.addLast("http-proxy", httpProxyHandler);
         }
 
         pipeline.addLast("http", new HttpClientCodec());
